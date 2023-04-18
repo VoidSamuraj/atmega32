@@ -1,0 +1,37 @@
+Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
+Wszystkie programy mają być napisane w języku asemblera dla procesora AVR,
+uruchomione i przetestowane na ATMEL Studio 7.0 z użyciem stanowiska zl3avr (ewentualnie dla celów testowych poza zajęciami AVR Studio 4.19 
+i symulatora HAPSIM).
+
+Treści zadań:
+
+We wszystkich poniższych zadaniach uwzględnia się, że w rzeczywistym układzie jeden z zacisków każdego z używanych przycisków dołączony jest do odpowiedniej
+ linii portu, a drugi do masy układu. W konsekwencji przyciśnięcie przycisku powoduje zwarcie linii portu do masy (wymuszenie 0 na linii wejściowej). 
+Gdy przycisk pozostaje niewciśnięty linia wejściowa portu jest niespolaryzowana i rozpoznawany jej stan logiczny jest nieokreślony. W celu spowodowania, 
+że w tym stanie przycisku stan linii wejściowej jest 1 należy programowo taką linię wejściową "podciągnąć do zasilania".
+
+		UWAGA (dla celów testowych poza zajęciami)!!! w symulatorze HAPSIM ustawienie takiego sposobu działania przycisku wymaga wybrania opcji 
+		"active low" w konfiguracji przycisku. 
+		Należy zapoznać się z rozwiązaniem problemu początkowego braku współpracy modeli przycisków i klawiatury HAPSIM z AVR Studio przedstawionym 
+		w pliku "Narzędzia.txt" (zespół "IINS4x Technika Mikroprocesorowa wykład 2022 lato", zakładka "Pliki", 
+		katalog "Materiały do zajęć/Laboratorium/Informacje i polecenia"). 
+
+1) Opracować, uruchomić i przetestować program powodujący, że w trakcie, gdy przycisk (button) dołączony do linii PA.1 jest niewciśnięty, dioda LED dołączona do linii
+ PA.0 świeci. Gdy gdy przycisk dołączony do linii PA.1 jest wciśnięty, dioda LED dołączona do linii PA.0 nie świeci. Użyć rozkazów operujących na 
+pojedynczych bitach.
+
+
+2) Do linii 0 i linii 1 Portu B mikrokontrolera dołączone są przyciski (wciśnięcie zwiera linię do 0). Do Portu A dołączona jest linijka LED.
+Opracować program powodujący, że gdy niewciśnięte są obydwa przyciski stan świecenia diod LED jest następujący |OFF|OFF|OFF|OFF|ON|ON|ON|ON. 
+W każdym innym przypadku stan świecenia diod LED jest następujący ON|ON|ON|ON|OFF|OFF|OFF|OFF. 
+Użyć rozkazów operujących na bajtach typu MOV, AND, OR, EOR, COM. Do stwierdzenia, że przyciśnięte są dwa przyciski użyć operacji czytania z portu
+i maskowania nieużywanych bitów, a do rozgałęzienia rozkazów typu BREQ/BRNE. Zaprogramowanie kierunków pracy w porcie niewykorzystującym wszystkich linii
+ ma być wykonane tak, żeby dotychczasowe ustawienia kierunków pracy linii nieużywanych pozostały bez zmiany. Analogiczne wymaganie odnosi się do podciągania
+linii wejściowych w porcie.
+
+
+UWAGA! Należy pamiętać, że - jeżeli w AVR używane są procedury (także procedury obsługi przerwań), względnie rozkazy operujące na stosie, należy w części
+inicjalizacyjnej programu zainicjalizować wskaźnik stosu. Właściwa sekwencja kroków podana jest w "ATMEGA32 Datasheet.pdf" (patrz pliki/Materiały informacyjne).
+W programach pisanych w C inicjalizację automatycznie dodaje kompilator.
+
+
