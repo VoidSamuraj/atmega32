@@ -1,3 +1,6 @@
+Z1(4): /4/OK
+Z2(0): /1/nie działa /-0,5/ kod tylko zaczęty, /-0,5/ wymagano użycia rozkazów operujących całym słowem a nie operujących na bitach,
+
 Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
 Wszystkie programy mają być napisane w języku asemblera dla procesora AVR,
 uruchomione i przetestowane na ATMEL Studio 7.0 z użyciem stanowiska zl3avr (ewentualnie dla celów testowych poza zajęciami AVR Studio 4.19 
