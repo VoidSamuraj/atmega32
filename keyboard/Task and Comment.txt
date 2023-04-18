@@ -1,0 +1,78 @@
+Z1(3,75): /4/Działa, zastrzeżenia: /-0,25/ nadmiar kodu w ISR, w miejsce AND i OR wystarcza bezpośredni wpis lub negacja (EX-OR), 
+Z2(0): /1/nie działa /-1/ błędy formalne kodu programu (nie kompiluje się), /-1/ tak znaczne opóźnienia w ISR są niedopuszczalne - potrzeba i wystarcza 3us!, /-0,75/ błąd - każde wywołanie ISR powinno aktywować inną kolumnę, /-0,75/ źle wyznaczanie kodu nru klawisza,
+
+
+Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
+
+UWAGA! W klawiaturze zorganizowanej matrycowo linie wierszy dołączone są do wejść portu obsługującego klawiaturę, a linie kolumn do wyjść tego portu.
+Gdy klawisze w wierszu nie są przyciśnięte, linia wejściowa portu do, której dołączony jest ten wiersz, pozostaje rozwarta (brak polaryzacji - brak 
+zdefiniowanego stanu logicznego). Dlatego linie wejściowe portu do których dołączone są wiersze należy "podciągnąć do zasilania" powodując w ten sposób to,
+ że gdy klawisze w wierszu nie są przyciśnięte stan linii wejściowej odpowiada wartości logicznej 1. Żeby wciśnięcie klawisza zmieniło ten stan (rozpoznanie
+ faktu wciśnięcia klawisza), na kolumnie, w której znajdujesię ten klawisz, musi być stan logiczny 0. Stąd algorytm multipleksowego przeglądania klawiatury, 
+jak poniżej.
+
+=>Algorytm multipleksowego przeglądania klawiatury martycowej o 1 wierszu i N kolumnach. Linia wiersza dołączona do wejścia portu. Linie kolumn do wyjść 
+portu.
+Krok#1) Kolumna#0=0, pozostałe 1; czytaj stan linii wiersza; jeżeli 0 -> nr klawisza=nr kolumny(ew. +1), BREAK, jeżeli 1 kontynuuj
+Krok#2) Kolumna#1=0, pozostałe 1; czytaj stan linii wiersza; jeżeli 0 -> nr klawisza=nr kolumny(ew. +1), BREAK, jeżeli 1 kontynuuj
+..
+Krok#N) jak powyższe.
+
+W przypadku klawiatury matrycowej o M wierszach i N kolumnach w każdym kroku należy czytać stan rejestru PIN portu, do którego dołączone są linie wierszy, a następnie
+operacją maskowania wyodrębnić ze stanu PIN bity odpowiadające wierszom. Jeżeli nie jest prawdą, że wszyskie linie wierszy mają stan 1 -> któryś z klawiszy
+ został przyciśnięty. W zależności od zastosowania (w ćwiczeniu warunki zadania) może być konieczne zdekodowanie numeru wiersza, w którym jest 0. W ćwiczeniu
+ można założyć, że w danym momencie tylko 1 klawisz może być wciśnięty. Może być konieczne wyznaczenie kodu (numeru) klawisza (na podstawie numeru wiersza 
+i numeru kolumny)
+Algorytm dekodowania, algorytm wyznaczenia numeru klawisza por. Wykład 2 "Algorytmy w typowych zastosowaniach systemów mikroprocesorowych" część 
+"Wybrane algorytmy obsługi panela sterującego systemem" (plik TMI_2023_W2.pdf - materiały do wykładów)
+
+W przypadku, gdy multipleksowa obsługa klawiatury odbywa się "na żądanie" (przerwanie zewnętrzne, zadanie 1), realizację należy wykonać w jednokrotnie 
+wykonywanej pętli. Należy uwzględnić konieczność pewnej zwłoki (rzędu mikrosekund!!!) po "aktywowaniu" kolumny a przed sprawdzaniem linii wejściowej, 
+ze względu potrzebę przeczekania stanów przejściowych.
+
+W przypadku, gdy obsługa multipleksowa klawiatury odbywa się poprzez cykliczne odpytywanie (Zadanie 3), realizacja każdego z kolejnych kroków ma być wykonana
+ w odrębnym (kolejnym) wywołaniu procedury obsługi przerwania kończącego odmierzenie czasu pomiędzy krokami.
+
+=>Algorytm odczytu klawiatury z odwracaniem kierunków linii w porcie (Zadanie 2). Klawiatura M wierszy i N kolumn.
+Początkowo linie portu, do którego dołączone są wiersze - na wejście, kolumny - na wyjście. Wszystkie linie kolumn aktywne (w ćwiczeniu wymagany stan 0).
+Co ustalony okres czasu (timer, procedura obsługi przerwania od timera) czytamy PIN portu obsługującego klawiaturę.
+Operacją maskowania wyodrębniane ze stanu PIN bity odpowiadające wierszom. Jeżeli nie jest prawdą, że wszystkie linie wierszy mają stan 1 -> 
+któryś z klawiszy został przyciśnięty (zapamiętaj stan bitów odpowiadających wierszom) -> zamiana kierunków linii portu (wejścia->wyjścia i odwrotnie), 
+linie wejść podciągnięte -> podanie na wszystkie linie wierszy 0 -> czytany PIN portu obsługującego klawiaturę. Operacją maskowania wyodrębniane ze stanu PIN 
+bity odpowiadające kolumnom. Powrót do stanu początkowego (kierunki linii, podciągnięcie linii wejściowych, aktywacja kolumn).
+Dekodowanie numeru klawisza, jeżeli wymagane, na identycznej zasadzie, jak opisano wcześniej.
+Istnieje wariant algorytmu odczytu klawiatury z odwracaniem kierunków linii w porcie, w którym kroki: czytanie PIN, zamiania kierunków linii itd wykonywane
+są na żądanie w procedurze obługi przerwania zewnętrznego, po wykryciu faktu wciśnięcia klawisza. Do jego użycia wymagane jest, żeby klawiatura była wyposażona
+sprzętowo w układ sygnalizujący wciśnięcie dowolnego klawisza (taki układ istnieje na zl3avr).
+
+
+
+
+Treści zadań:
+
+1)	Klawiatura składa się z 16 klawiszy umieszczonych na skrzyżowianiach 4 linii kolumn z 4-ema liniami wierszy. 
+Kolumny klawiatury dołączone są do 4-ech linii portu D (PD7-4). Wiersze dołączone są do 4-ech linii portu D (PD3-0). 
+Ponadto do portu A dołączona linijka LED.
+Do portu C dołączone są segmenty wyświetlacza 7-segmentowego (dla celów testowych poza zajęciami w symulatorze HAPSIM dołączona jest druga "linijka" diod).
+Należy opracować program, który obsługuje klawiaturę zgodnie z algorytmem "z odwracaniem kierunków linii w porcie" oraz, jeżeli stwierdzone zostanie 
+wciśnięcie klawisza, za pośrednictwem portu A wyświetla na linijce LED kod o postaci: "kod aktywnej kolumny (kod 1z4, 4 starsze bity PortA)|kod aktywnego
+ wiersza (kod 1z4, młodsze bity PortA)" Kod wyświetla się do czasu przyciśnięcia innego klawisza. 
+Dodatkowo w procedurze main odbywa się animacja wyświetlania za pośrednictwem Portu C, jak w zadaniu 1 CW#3. 
+Czas reakcji na przyciśnięcie klawisza na klawiaturze nie dłuższy niż 50 ms. 
+Obsługa klawiatury w procedurze obsługi przerwania (WYŁĄCZNIE!) od timera. Użyć timera 0. 
+Kod 1 z N polega na tym, że wśród N bitów tylko 1 jest ustawiony (stan 1). Jest to ten bit, który odpowiada zakodowanej cyfrze (liczbie). 
+Pozostałe bity mają stan 0.
+
+
+2)	Klawiatura i zestawy diod LED podłączone są do mikrokontrolera jak w zadaniu 1. 
+Należy opracować program, który obsługuje klawiaturę metodą multipleksacji z cyklicznym odpytywaniem klawiatury. Czas pomiędzy krokami wykonania algorytmu
+odmierzany timerem.  Program, jeżeli stwierdzone zostanie wciśnięcie klawisza, za pośrednictwem portu A wyświetla na linijce LED numer wciśniętego klawisza, 
+(numeracja od 0 do 15; przy korzystaniu z HAPSIM - zgodny z opisem na modelu klawiatury HAPSIM. Należy wczytać plik konfiguracyjny CW4Z2.xml). 
+Kod wyświetla się do czasu przyciśnięcia innego klawisza. 
+Dodatkowo w procedurze main odbywa się animacja wyświetlania za pośrednictwem Portu C, jak w zadaniu 1.
+Czas reakcji na przyciśnięcie klawisza na klawiaturze nie dłuższy niż 50 ms. 
+Obsługa klawiatury w procedurze obsługi przerwania (WYŁĄCZNIE!) od timera. Użyć timera 0. 
+
+
+wektory przerwań:
+https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
