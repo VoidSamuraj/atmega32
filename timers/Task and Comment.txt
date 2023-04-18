@@ -1,0 +1,40 @@
+Z1(2,75): /4/Działa, zastrzeżenia: /-0,5/ źle kasowanie flagi zgłoszenia przerwania INT0, /-0,25/ bez potrzeby kasowanie flagi przerwania od timera - wykonuje się automatycznie, /-0,5/ operacja użyta do kasowania flagi przepełnienia od timera - niewłaściwa, 
+Z2(0): /0/program nie zawiera kluczowych elementów realizacji zadania
+
+Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
+Wszystkie programy powinny byc kodowane w języku C++ oraz uruchomione i przetestowane na ATMEL Studio 7.0 z użyciem stanowiska zl3avr 
+(ewentualnie dla celów testowych poza zajęciami AVR Studio 4.19 i symulatora HAPSIM).
+
+
+		UWAGA!!! (dla celów testowych poza zajęciami) Należy zapoznać się z rozwiązaniem problemu początkowego braku współpracy modeli przycisków 
+		i klawiatury HAPSIM z AVR Studio przedstawionym w pliku "Narzędzia.txt"	(zespół "IINS4x Technika Mikroprocesorowa wykład 2022 lato", 
+		zakładka "Pliki", katalog "Materiały do zajęć/Laboratorium/Informacje i polecenia"). 
+ 
+
+Właściwe nazwy wektorów przerwań dla poszczególnych zdarzeń w timerach AVR są pod linkiem:
+https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
+Należy użyć nazwy właściwe dla ATMEGA32.
+
+Treści zadań:
+
+1)	Do PA.0 dołączona jest dioda LED (D0). Do PD2 dołączony jest przycisk (button). Wciśnięcie powoduje zwarcie PD2 do masy (stan 0). 
+Zwolnienie przycisku pozostawia linię niepodłączoną. Do portu C dołączone są segmenty wyświetlacza 7-segmentowego (dla celów testowych poza zajęciami 
+w symulatorze HAPSIM dołączona jest druga "linijka" diod).
+Program działa tak, że:
+a) Na segmentach dołączonych do Port C (HAPSIM - linijce diod) w pętli nieskończonej trwa animacja: ON|ON|ON|ON|ON|ON|ON|ON| przez 500ms
+ i OFF|OFF|OFF|OFF|OFF|OFF|OFF|OFF| przez 500ms. Czas odmierzany za pomocą opóźnienia programowego (biblioteka delay).
+b) wciśnięcie przycisku włącza LED dołączony do PA0 i inicjuje odmierzanie czasu w timerze. LED gaśnie po upływie 0,5 sekundy (każde wciśnięcie w czasie 
+odmierzania czasu powoduje  "restart" odmierzania i w monsekwencji przedłużenie włączenia LED o w/w czas). Przed odmierzaniem czasu i po odmierzeniu czasu 
+timer ma być zastopowany. Obsługa linii portu PA.0 w procedurach obsługi przerwań. Zastosować eliminację efektu odbić styków przycisku. Użyć timera 1.
+
+
+2)	Opracować program, który po starcie na wyjściu linii OC1A generuje przebieg, w którym czas trwania 1 wynosi 190ms (faza 1 cyklu), czas trwania 0 
+wynosi 380ms (faza 2 cyklu). Czas odmierza timer. Użyć trybu PWM. Do sterowania linią OC1A nie używać obsługi przerwań. Faza 1 rozpoczyna się z minimalnym 
+opoźnieniem w stosunku do startu programu, potrzebnym na wykonanie niebędnych konfiguracji.
+
+		UWAGA!!! (dla celów testowych poza zajęciami)Symulację działania należy przeprowadzić z użyciem symulatora "AVR Simulator 2", bez symulatora
+		 HAPSIM (nie współpracuje z AVR Simulator 2). Jeżeli szkielet projektu do zadania 2 zawiera inne ustawienia, należy je odpowiednio zmienić. 
+		Weryfikację działania programu należy wykonać w trybie "auto-step" obserwując stan rejestru PIN portu, w którym znajduje się linia OC1A.
+		Dla celów testowania zwiększyć 1024 krotnie częstotliwość zliczaną przez timer. W wersji finalnej programu przywrócić ustawienia wymagane 
+		przez zadanie.
+
