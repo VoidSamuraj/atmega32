@@ -1,0 +1,67 @@
+Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
+Wszystkie programy powinny byc kodowane w języku C++ oraz uruchomione i przetestowane na ATMEL Studio 7.0 i systemie uruchomieniowym zlr3avr.
+
+Założyć, że częstotliwośc zegara systemowego wynosi 1 MHz.
+
+
+Właściwe nazwy wektorów przerwań dla poszczególnych zdarzeń w timerach AVR są pod linkiem:
+https://www.nongnu.org/avr-libc/user-manual/group__avr__interrupts.html
+Należy użyć nazwy właściwe dla ATMEGA32.
+
+Uwagi ogólne:
+
+W swoich programach możecie Państwo wykorzystywać predefiniowane symbole określające adresy portów, bitów itd.  
+Ponadto, jeżeli uznacie Państwo to za wygodne, możecie Państwo w miejsce stałych używać symboli, którym oczywiście na początku programu (dyrektywą EQU)
+należy przypisać odpowiednie wartości. 
+
+
+
+Wyświetlacz 7-segmentowy w zlr3avr składa się z e-ech modułów. Multipleksowa obsługa takiego wyświetlacza wymaga, żeby zaciski C1-4 (wybór modułu)
+połaczyć z wybranymi 4-emi wyjściami z jednego portu (X), natomiast zaciski "a"-"dp" (włączenie segmentu) połączyć z wyjściami drugiego portu (Y).
+Podawane na port "Y" kody decydują, które segmenty zaświecą się spośród 7-miu segmentów cyfr (8-ego segmentu odpowiadającego kropce dziesiętnej).
+Kod 4-ech wyjść w porcie "X" decyduje, na którym module zaświeci się ten wzór segmentów.
+Zaświecenie segmentu wymaga, żeby linia portu miała stan niski (0 logiczne). Moduł jest wybrany (będą na nim świecić segmenty), jeżeli steruący nim bit
+ma wartość 0.
+
+Wyświetlanie 4-ech różnych cyfr polega na sterowaniu portami "X/Y" w trybie podziału czasu (multipleksowo). Czas odmierza timer.
+Każdorazowo po upływie odmierzonego czasu (obsługa przerwania od timera) do portu "X", na 4-y bity sterujące wyborem modułu wpisywany jest kod
+aktywujący kolejny moduł, do portu "Y" kod reprezentujący kolejną cyfrę. Stany w w/w portach utrzymują się aż do upływu kolejnego odcinka czasu,
+ itd. cyklicznie. Należy zliczać kolejne wywołania procedury obsługi przerwania (zmienna) modulo liczba modułów wyświetlacza (np. zliczanie od 0-3;
+po wpisach do portów należy zwiększyć stan zmiennej; jeżeli jej wartość osiąga 4 - należy zmienną wyzerować; możliwe są też inne sposoby zaprogramowania
+zliczania modulo N).
+
+Kody kolejnych cyfr należy zapisać do zmiennej tablicowej (array) i z niej odczytywać. 
+
+UWAGA! Żeby zmienna modyfikowana w obsłudze przerwania zachowywała swoją wartość do kolejnego wywołania obsługi przerwania należy zadeklarować ją
+używają słowa kluczowego volatile, np. volatile uint8_t k;  
+
+W praktycznych rozwiązaniach w zmiennej tablicowej, o której mowa wyżej, raczej znajdują się kody binarne (integer, int8_t, itp.) cyfr.
+Wówczas należy przed wpisaniem do portu "Y" wykonać konwersję na kod 7-mio segmentowy. Najwygodniejszy sposób polega na użyciu stałej 
+tablicowej (tablica transkodowania), której kolejne wartości są kodami 7-segmentowymi kolejnych cyfr 0,1,..E,F. Wówczas kod binarny cyfry wprost 
+określa pozycję odpowiadającego jej kodu 7-segmentowego w stałej tablicowej. Deklaracja stałej tablicowej np. 2 elementowej:
+const uint8_t kody[16]={0b10011111, 0b10011111} 
+Jeżeli stała tablicowa ma być umieszczona w pamięci programu należy odpowiednio zadeklarować tę tablicę i użyć właściwego makro dla czytania
+z tablicy (patrz TMI_2023_W3, "Stałe w pamięci programu").
+
+
+Kody 7-segmentowe: https://pl.wikipedia.org/wiki/Wy%C5%9Bwietlacz_siedmiosegmentowy
+
+
+Treści zadań:
+
+
+Zadanie 1. Napisz program, który na wyświeltaczu 7-segmentowym zlr3avr wyświetla (od lewej) cyfry: 0479. Użyj multipleksowej techniki obsługi wyświetlacza.
+Sterowanie wyborem modułu za pośrednictwem portu C (PC3 - lewy skrajny moduł, ..., PC0 - prawy skrajny moduł). Sterowanie segmentami za pośrednictwem
+portu A (PA0 - segment "a", ..., PA7 - segment "dp"). Odmierzanie czasu - timer 0. Powtarzanie cyklu wyświetlania z częstotliwością 50Hz.
+Kody 7-segmentowe kolejnych wyświetlanych cyfr należy umieścić w zmiennej tablicowej zlokalizowanej w PAMIĘCI DANYCH.
+Obsługa wyświetlania (WYŁĄCZNIE!) w obsłudze przerwania od timera.
+
+
+Zadanie 2. Układ połączeń jak w zadaniu 1. Napisz program, który na wyświeltaczu 7-segmentowym zlr3avr wyświetla (od lewej) cyfry: AFB7.
+Użyj multipleksowej techniki obsługi wyświetlacza. Sterowanie wyborem modułu i sterowanie segmentami jak w zadaniu 1. 
+Odmierzanie czasu - timer 0. Powtarzanie cyklu wyświetlania z częstotliwością 50Hz.
+Obsługa wyświetlania (WYŁĄCZNIE!) w obsłudze przerwania od timera.
+Kody BINARNE kolejnych wyświetlanych cyfr należy umieścić w zmiennej tablicowej zlokalizowanej w PAMIĘCI DANYCH.
+Przed każdym wyświetleniem kolejnej cyfry należy dokonać zamiany jej kodu z binarnego na 7-segmentowy z zastosowaniem tablicy transkodowania.
+Tablicę transkodowania umieść w PAMIĘCI PROGRAMU. W tablicy transkodowania muszą znaleźć się kody 7-segmentowe wszystkich 16-tu cyfr szestanstkowych.
+
