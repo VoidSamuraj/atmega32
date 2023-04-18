@@ -1,0 +1,56 @@
+Z1(3,5): /4/Działa, zastrzeżenia: /-0,5/ komentarz do kodu niezgodnie faktycznym działaniem, /0/ błędy formalne budowy programu, 
+Z2(3,25): /4/Działa, zastrzeżenia: /-0,5/ nie/źle jest ustawiony kierunek linii w PortA, /-0,25/ zbędne instrukcje w kodzie,
+
+
+Poniższe zadania przeznaczone są do samodzielnego wykonania przez Studentów.
+Wszystkie programy powinny byc kodowane w języku C++ oraz uruchomione i przetestowane na ATMEL Studio 7.0 z użyciem stanowiska zl3avr 
+(ewentualnie dla celów testowych poza zajęciami AVR Studio 4.19 i symulatora HAPSIM).
+
+UWAGA!!!W rzeczywistym urządzeniu (nie dotyczy przypadku wykonywania ćwiczenia na symulatorze) styk przycisku, po jego przyciśnięciu, a także po zwolnieniu, 
+wykonuje mechaniczne drgania, w wyniku których może dochodzić do dodatkowych rozwarć i zwarć styku aż do momentu dostatecznego wytłumienia drgań.
+W konsekwencji pojedyncze przyciśnięcie/zwolnienie przycisku może spowodować serię zdarzeń rozpoznawanych przez wejście mikrokontrolera jako kolejne zmiany
+ stanów: 0->1, 1->0. W przypadku, gdy przycisnięcie/zwolnienie klawisza ma wyzwolić obsługę przerwania, ta w efekcie może wykonać się wielokrotnie po
+pojedynczym przyciśnięciu/zwolnieniu. NALEŻY zostosować rozwiązanie eliminujące skutki odbić styków. Poniżej przedstawiono sposoby (algorytmy) do zastosowania
+w tym celu. Zakładamy, że kolejne przyciśnięcia klawisza nie są wykonywane w odstępach czasu krótszych, niż czas wymagany do ustabilizowania się styku. 
+
+SPOSÓB 1, bez użycia timera. Ten sposób powinien zostać użyty w programach wykonywanych na CW#2) 
+- w procedurze obsługi przerwania zewnętrznego, przystąpienie do wykonania czynności przewidzianych dla reakcji na wciśnięcie uzależnione jest od wyniku 
+sprawdzenia, przeprowadzonego następująco:
+a) wykonać opóźnienie czasowe o czas niezbędny na ustabilizowanie się styku,
+b) pomiń wykonanie czynności realizujących reakcję, jeżeli po upływnie tego czasu stan logiczny na linii zgłaszającej przerwanie jest równy 1, gdy reakcja
+ ma następować w wyniku wciśnięcia przycisku (pomiń, jeżeli równy jest 0, gdy reakcja miała nastąpić w wyniku zwolnienia przycisku), 
+c) w przeciwnym razie wykonaj kod realizujący wymaganą reakcję.
+d) na koniec obsługi przerwania wyczyścić flagę zgłoszenia przerwania zewnętrznego.
+
+SPOSÓB 2, z użyciem timera) - w procedurze obsługi przerwania zewnętrznego należy uruchomić odmierzenie czasu, jak powyżej, w timerze (przerwanie od timera 
+odblokowane) oraz zablokować zezwolenie na reakcję na przerwanie zewnętrzne. Na tym działania w tej procedurze się kończą. W procedurze obsługi przerwania 
+od timera należy timer zatrzymać, a następnie wykonać czynności b), c) i d) opisane powyżej i odblokować zezwolenie na przerwanie zewnętrzne.
+
+		UWAGA!!! (dla celów testowych poza zajęciami) Należy zapoznać się z rozwiązaniem problemu początkowego braku współpracy modeli przycisków 
+		i klawiatury HAPSIM z AVR Studio przedstawionym w pliku "Narzędzia.txt"	(zespół "IINS4x Technika Mikroprocesorowa wykład 2022 lato", 
+		zakładka "Pliki", katalog "Materiały do zajęć/Laboratorium/Informacje i polecenia"). 
+
+Treści zadań:
+
+1)	Do portu A  dołączona jest "linijka" diod. Do portu C dołączone są segmenty wyświetlacza 7-segmentowego (dla celów testowych poza zajęciami 
+w symulatorze HAPSIM dołączona jest druga "linijka" diod). Po starcie programu stan świecenia diod dołączonych do Port A (od lewej dioda podłączona do 
+linii 0 w Port A, itd.) jest następujący ON|ON|ON|ON|OFF|OFF|OFF|OFF. Po starcie programu stan świecenia diod dołączonych do Port C jest następujący 
+ON|ON|ON|ON|ON|ON|ON|ON (UWAGA! żeby na zl3avr zaświecił sie segment wyświetlacza 7-segmentowego należy na  zacisk tego segmentu podać 0).
+Do linii 2 w porcie D (linia zgłaszania przerwania zewnętrznego INT0) dołączony jest przycisk (button). Wciśnięcie przycisku oznacza zwarcie linii do masy 
+(logiczne 0).
+Działanie programu: procedura main steruje portem C w ten sposób, że stan świecenia diod podłączonych do Port C zmienia się cyklicznie 
+na przeciwny co 200 ms. 
+Port A sterowany jest w procedurze obsługi przerwania zewnętrznego INT0. Każdorazowo po przycisnięciu przycisku stan świecenia 
+linijki diod LED podłączonej do PortA zmienia się na przeciwny (te, które świeciły, nie świecą i odwrotnie). Do realizacji opóźnienia wykorzystać 
+procedurę zawierającą pętlę  opóźnienia programowego. Przyjąć, że częstotliwość zegara systemowego wynosi 1MHz. 
+Zastosować eliminację efektu odbić styków przycisku.
+
+2)	Do Portu C podłączone są są segmenty wyświetlacza 7-segmentowego (dla celów testowych poza zajęciami w symulatorze HAPSIM dołączona jest linijka
+ diod). Sterowanie w Port C odbywa się jak w zadaniu 1. Do linii 0 Portu A podłączona jest pojedyncza dioda z linijki diod.
+Do linii INT0 (PD2) i do linii INT1 (PD3) podłączone są przyciski o właściwościach, jak w Zadaniu 1.
+Po starcie programu dioda podłączona do Portu A jest WYŁĄCZONA. Każdorazowo, gdy nastąpi przyciśnięcie przycisku podłączonego do PD2 
+dioda dołączona do Port A zaświeca. Dioda gaśnie, gdy przycisnąć przycisk podłączony do PD3. 
+Sterowanie linią PA.0 w obsłudze przerwań.
+Sterowanie linią PA.0 nie może modyfikować stanu pozostałych linii Port A.
+
+ 
